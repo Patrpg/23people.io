@@ -8,7 +8,7 @@ public class Student {
 
     Integer id;
 
-    Integer idCourse;
+    Course course;
 
     Integer rut;
 

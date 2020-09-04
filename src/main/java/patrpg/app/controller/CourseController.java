@@ -1,14 +1,13 @@
 package patrpg.app.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import patrpg.app.model.Course;
 import patrpg.app.service.CourseService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -18,11 +17,13 @@ public class CourseController {
 
     /*
     GET /courses -> It returns a paginated list of existing courses
-     */
+    */
     @GetMapping("/courses")
-    public ResponseEntity<List<Course>> getCourses() {
-        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+    public ResponseEntity<Page<Course>> getCourses(Pageable pageable) {
+        Page<Course> coursePage = courseService.getCourses(pageable);
+        return new ResponseEntity<>(coursePage, HttpStatus.OK);
     }
+
 
     /*
     GET /courses/:id -> It returns the course identified by the given id. A Not Found 404
@@ -30,7 +31,7 @@ public class CourseController {
      */
     @GetMapping("/courses/{id}")
     public ResponseEntity<Course> getCourseById(@PathVariable Integer id) {
-        return new ResponseEntity<>(new Course(), HttpStatus.OK);
+        return new ResponseEntity<>(courseService.getCourseById(id), HttpStatus.OK);
     }
 
     /*
@@ -40,7 +41,7 @@ public class CourseController {
      */
     @PostMapping("/courses")
     public ResponseEntity<Course> insertCourse(@RequestBody Course course) {
-        return new ResponseEntity<>(new Course(), HttpStatus.CREATED);
+        return new ResponseEntity<>(courseService.insertCourse(course), HttpStatus.CREATED);
     }
 
     /*
@@ -52,7 +53,7 @@ public class CourseController {
     @PutMapping("/courses/{id}")
     public ResponseEntity<Course> updateCourse(@PathVariable Integer id,
                                                @RequestBody Course course) {
-        return new ResponseEntity<>(new Course(), HttpStatus.OK);
+        return new ResponseEntity<>(courseService.updateCourse(id, course), HttpStatus.OK);
     }
 
     /*
@@ -60,7 +61,8 @@ public class CourseController {
     response status must be returned if there is no course with the given :id
      */
     @DeleteMapping("/courses/{id}")
-    public ResponseEntity<Course> deleteCourse(@PathVariable Integer id) {
-        return new ResponseEntity<>(new Course(), HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void> deleteCourse(@PathVariable Integer id) {
+        courseService.deleteCourse(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
