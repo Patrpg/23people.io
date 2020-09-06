@@ -1,5 +1,7 @@
 package patrpg.app.service;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -11,7 +13,9 @@ import patrpg.app.repository.CourseRepository;
 
 import java.util.Optional;
 
+@Log4j2
 @Service
+@AllArgsConstructor
 public class CourseService {
 
     CourseRepository courseRepository;
@@ -24,6 +28,7 @@ public class CourseService {
     public Course getCourseById(Integer id) {
         Optional<CourseEntity> oce = courseRepository.findById(id);
         if (oce.isEmpty()) {
+            log.warn("[getCourseById] There is no course with id {}", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "[getCourseById] There is no course with id " + id);
         }
         return getCourseFromEntity(oce.get());
@@ -31,6 +36,7 @@ public class CourseService {
 
     public Course insertCourse(Course course) {
         if (course.getId() != null) {
+            log.warn("[insertCourse] Id must be null");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "[insertCourse] Id must be null");
         }
         course.setId(courseRepository.save(getEntityFromCourse(course)).getId());
@@ -39,17 +45,15 @@ public class CourseService {
 
     public Course updateCourse(Integer id, Course course) {
         if (!id.equals(course.getId())) {
+            log.warn("[updateCourse] Id in JSON is different from path param id");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "[updateCourse] Id in JSON is different from path param id");
         }
         Optional<CourseEntity> oce = courseRepository.findById(id);
         if (oce.isPresent()) {
-            CourseEntity ce = oce.get();
-            if (course.getCode() != null) {
-                ce.setCode(course.getCode());
-            }
-            courseRepository.save(ce);
+            courseRepository.save(getEntityFromCourse(course));
             return course;
         }
+        log.warn("[updateCourse] There is no course with id {}", id);
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "[updateCourse] There is no course with id " + id);
     }
 
@@ -59,6 +63,7 @@ public class CourseService {
             courseRepository.delete(oce.get());
             return;
         }
+        log.warn("[deleteCourse] There is no course with id {}", id);
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "[deleteCourse] There is no course with id " + id);
     }
 

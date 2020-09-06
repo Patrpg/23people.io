@@ -18,6 +18,6 @@ public class Student {
 
     String lastName;
 
-    Boolean age;
+    Integer age;
 
 }

@@ -20,8 +20,7 @@ public class CourseController {
     */
     @GetMapping("/courses")
     public ResponseEntity<Page<Course>> getCourses(Pageable pageable) {
-        Page<Course> coursePage = courseService.getCourses(pageable);
-        return new ResponseEntity<>(coursePage, HttpStatus.OK);
+        return new ResponseEntity<>(courseService.getCourses(pageable), HttpStatus.OK);
     }
 
 

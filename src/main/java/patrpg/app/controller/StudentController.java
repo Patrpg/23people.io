@@ -1,27 +1,26 @@
 package patrpg.app.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import patrpg.app.model.Student;
 import patrpg.app.service.StudentService;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @AllArgsConstructor
 public class StudentController {
 
-    StudentService SudentService;
+    StudentService studentService;
 
     /*
     GET /students -> It returns a paginated list of existing students
      */
     @GetMapping("/students")
-    public ResponseEntity<List<Student>> getStudents() {
-        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+    public ResponseEntity<Page<Student>> getStudents(Pageable pageable) {
+        return new ResponseEntity<>(studentService.getStudents(pageable), HttpStatus.OK);
     }
 
     /*
@@ -30,7 +29,7 @@ public class StudentController {
      */
     @GetMapping("/students/{id}")
     public ResponseEntity<Student> getStudentById(@PathVariable Integer id) {
-        return new ResponseEntity<>(new Student(), HttpStatus.OK);
+        return new ResponseEntity<>(studentService.getStudentById(id), HttpStatus.OK);
     }
 
     /*
@@ -40,7 +39,7 @@ public class StudentController {
      */
     @PostMapping("/students")
     public ResponseEntity<Student> insertStudent(@RequestBody Student student) {
-        return new ResponseEntity<>(new Student(), HttpStatus.CREATED);
+        return new ResponseEntity<>(studentService.insertStudent(student), HttpStatus.CREATED);
     }
 
     /*
@@ -52,7 +51,7 @@ public class StudentController {
     @PutMapping("/students/{id}")
     public ResponseEntity<Student> updateStudent(@PathVariable Integer id,
                                                  @RequestBody Student student) {
-        return new ResponseEntity<>(new Student(), HttpStatus.OK);
+        return new ResponseEntity<>(studentService.updateStudent(id, student), HttpStatus.OK);
     }
 
     /*
@@ -60,8 +59,9 @@ public class StudentController {
     response status must be returned if there is no student with the given :id
      */
     @DeleteMapping("/students/{id}")
-    public ResponseEntity<Student> deleteStudent(@PathVariable Integer id) {
-        return new ResponseEntity<>(new Student(), HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void> deleteStudent(@PathVariable Integer id) {
+        studentService.deleteStudent(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
